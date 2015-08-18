@@ -161,7 +161,7 @@ Catalyst::ActionRole::Methods - Dispatch by HTTP Methods
 
 This is a L<Moose::Role> version of the classic L<Catalyst::Action::REST> action
 class.  The intention is to offer some of the popular functionality that comes
-with L<Catalyst::Action::REST> in a more modular, build what you need package.
+with L<Catalyst::Action::REST> in a more modular, 'build what you need' package.
 
 Bulk of this documentation and test cases derive from L<Catalyst::Action::REST>
 with the current author's gratitude.
@@ -231,21 +231,13 @@ This is not to say its never correct to use an action class, but now you have th
 choice.
 
 Second, L<Catalyst::Action::REST> has the behavior as noted of altering the core
-L<Catalyst::Request> class.  This might not be desired and has always stuck the
+L<Catalyst::Request> class.  This might not be desired and has always struck the
 author as a bit too much side effect / action at a distance.
 
 Last, L<Catalyst::Action::REST> is actually a larger distribution with a bunch of
 other features and dependencies that you might not want.  The intention is to offer
 those bits of functionality as standalone, modern components and allow one to assemble
 the parts needed, as needed.
-
-B<NOTE> There is a minor change in how we handle return values from actions.  In
-general L<Catalyst> does nothing with an action return value (unless in an auto action).
-However thismight not always be the case, and you might have used that return value
-for something.  In L<Catalyst::Action::REST> the return value was always the return
-of the dispatched sub action (if any).  We tweaked this so that we use the sub action
-return value, BUT if that value is undefined, we use the parent action return value
-instead.
 
 This action role is for the most part a 1-1 port of the action class, with one minor
 change to reduce the dependency count.  Additionally, it does not automatically
@@ -254,9 +246,17 @@ action class. This feature is left off because its easy to set this yourself if
 desired via the global L<Catalyst> configuration and we want to follow and promote
 the idea of 'do one thing well and nothing surprising'.
 
+B<NOTE> There is an additional minor change in how we handle return values from actions.  In
+general L<Catalyst> does nothing with an action return value (unless in an auto action).
+However this might not always be the future case, and you might have used that return value
+for something in your custom code.  In L<Catalyst::Action::REST> the return value was
+always the return of the dispatched sub action (if any).  We tweaked this so that we use
+the sub action return value, BUT if that value is undefined, we use the parent action
+return value instead.
+
 We also dropped saying 'REST' when all we are doing is dispatching on HTTP method.
 Since the time that the first version of L<Catalysts::Action::REST> was released to
-CPAN out notion of what 'REST' means has greatly evolved so I think its correct to
+CPAN our notion of what 'REST' means has greatly evolved so I think its correct to
 change the name to be functionality specific and to not confuse people that are new
 to the REST discipline.
 
@@ -270,7 +270,7 @@ very quickly.
 =head1 VERSUS NATIVE METHOD ATTRIBUTES
 
 L<Catalyst> since version 5.90030 has offered a core approach to dispatch on the
-http method (via L<Catalyst::ActionRole::HTTPMethods>).  Why still use this actionrole
+http method (via L<Catalyst::ActionRole::HTTPMethods>).  Why still use this action role
 versus the core functionality?  ALthough it partly comes down to preference and the
 author's desire to give current users of L<Catalyst::Action::REST> a path forward, there
 is some functionality differences beetween the two which may recommend one over the
