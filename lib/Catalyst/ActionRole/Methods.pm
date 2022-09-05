@@ -115,6 +115,12 @@ sub _return_not_implemented {
 
 1;
 
+__END__
+
+=pod
+
+=encoding UTF-8
+
 =head1 NAME
 
 Catalyst::ActionRole::Methods - Dispatch by HTTP Methods
