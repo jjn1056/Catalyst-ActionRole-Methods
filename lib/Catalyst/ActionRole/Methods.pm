@@ -2,7 +2,7 @@ package Catalyst::ActionRole::Methods;
 
 use Moose::Role;
 
-our $VERSION = '0.002';
+our $VERSION = '0.003';
 
 around 'dispatch', sub {
     my $orig = shift;
