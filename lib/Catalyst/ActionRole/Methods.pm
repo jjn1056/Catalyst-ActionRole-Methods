@@ -38,22 +38,20 @@ sub _dispatch_rest_method {
 
     my $req         = $c->request;
     my $controller = $c->component( $self->class );
-    my ($code, $name);
+    my $code;
   
     {
         if ( $code = $controller->action_for( $rest_method ) ) {
       return $c->forward( $code,  $req->args ); # Forward to foo_GET if it's an action
         } elsif ( $code = $controller->can( $rest_method ) ) {
-        $name = $rest_method; # Stash name and code to run 'foo_GET' like an action below.
+            # nothing to do
         } elsif ( 'OPTIONS' eq $suffix ) {
-                $name = $rest_method;
                 $code = sub { $self->_return_options($self->name, @_) };
         } elsif ( 'HEAD' eq $suffix ) {
               $rest_method =~ s{_HEAD$}{_GET}i;
             return
               $self->_dispatch_rest_method($c, $rest_method, $suffix);
         } elsif ( 'not_implemented' eq $suffix ) {
-            $name = $rest_method;
             $code = sub { $self->_return_not_implemented($self->name, @_) };
         } else {
                 # Otherwise, not implemented.
@@ -66,10 +64,8 @@ sub _dispatch_rest_method {
     # different stats shown, and different code run.
     # Also get the full path for the action, and make it look like a forward
     local $self->{code} = $code;
-    my @name = split m{/}, $self->reverse;
-    $name[-1] = $name;
-    local $self->{reverse} = "-> " . join('/', @name);
- 
+    ( local $self->{'reverse'} = '-> ' . $self->reverse ) =~ s{[^/]+\z}{$rest_method};
+
     $c->execute( $self->class, $self, @{ $req->args } );
 }
  
