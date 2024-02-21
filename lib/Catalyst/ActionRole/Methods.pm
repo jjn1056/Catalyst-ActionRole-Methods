@@ -83,7 +83,7 @@ sub get_allowed_methods {
     my ( $self, $controller, $c, $name ) = @_;
     my $class = ref $controller || $controller;
     my %methods = (
-      map { /^$name\_(.+)$/ ? ( $1 => 1 ) : () }
+      map { /^\Q$name\E\_(.+)$/ ? ( $1 => 1 ) : () }
         ($class->meta->get_all_method_names )
     );
     $methods{'HEAD'} = 1 if exists $methods{'GET'};
