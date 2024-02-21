@@ -17,10 +17,11 @@ around 'dispatch', sub {
 };
 
 around 'list_extra_info' => sub {
-  my ($orig, $self, @args) = @_;
+  my $orig = shift;
+  my $self = shift;
   my @allowed_methods = $self->get_allowed_methods($self->class,undef,$self->name);
   return +{
-    %{ $self->$orig(@args) }, 
+    %{ $self->$orig(@_) },
     HTTP_METHODS => \@allowed_methods,
   };
 };
