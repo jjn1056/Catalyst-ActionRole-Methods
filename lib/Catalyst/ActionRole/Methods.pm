@@ -47,9 +47,7 @@ sub _dispatch_rest_method {
     elsif ($code = $controller->can($rest_method)) {
         $name = $rest_method; # Stash name and code to run 'foo_GET' like an action below.
     }
- 
-    # Generic handling for foo_*
-    if (!$code) {
+    else {
         my $code_action = {
             OPTIONS => sub {
                 $name = $rest_method;
