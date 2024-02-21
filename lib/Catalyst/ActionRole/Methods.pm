@@ -19,15 +19,12 @@ around 'dispatch', sub {
 
     my $return = $self->$orig($c, @_);
 
+    my $controller = $c->component( $self->class );
     my $method_name = $self->name;
     my $req_method = $c->request->method;
-
     my $suffix = uc $req_method;
+    my ( $rest_method, $code );
 
-    my $controller = $c->component( $self->class );
-    my $code;
-
-    my $rest_method;
     {
         $rest_method = $method_name . '_' . $suffix;
 
