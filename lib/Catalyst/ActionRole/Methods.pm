@@ -94,10 +94,8 @@ sub get_allowed_methods {
 sub _return_options {
     my ( $self, $method_name, $controller, $c) = @_;
     my @allowed = $self->get_allowed_methods($controller, $c, $method_name);
-    $c->response->content_type('text/plain');
-    $c->response->status(200);
+    $c->response->status(204);
     $c->response->header( 'Allow' => @allowed ? \@allowed : '' );
-    $c->response->body(q{});
 }
  
 sub _return_not_implemented {
@@ -195,7 +193,7 @@ For example, in the example above, calling GET on "/foo" would result in
 the foo_GET method being dispatched.
  
 If a method is requested that is not implemented, this action will
-return a status 405 (Method Not Found).  It will populate the "Allow" header
+return a status 405 (Method Not Found).  It will populate the C<Allow> header
 with the list of implemented request methods.  You can override this behavior
 by implementing a custom 405 handler like so:
  
@@ -204,7 +202,7 @@ by implementing a custom 405 handler like so:
    }
  
 If you do not provide an _OPTIONS subroutine, we will automatically respond
-with a 200 OK.  The "Allow" header will be populated with the list of
+with a 204 (No Content). The C<Allow> header will be populated with the list of
 implemented request methods. If you do not provide an _HEAD either, we will
 auto dispatch to the _GET one in case it exists.
 

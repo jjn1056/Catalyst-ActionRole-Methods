@@ -74,4 +74,13 @@ use HTTP::Request::Common;
   like $res->content, qr/ GET /;
 }
 
+{
+  ok my $res = request(OPTIONS '/22');
+  is $res->code, 204;
+  is $res->content_type, '';
+  is $res->content_length, undef;
+  is $res->header( 'Allow' ), 'GET, HEAD, POST';
+  is $res->content, '';
+}
+
 done_testing;
