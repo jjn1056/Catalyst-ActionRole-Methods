@@ -23,7 +23,7 @@ around 'dispatch', sub {
     my $method_name = $self->name;
     my $req_method = $c->request->method;
     my $suffix = uc $req_method;
-    my ( $rest_method, $code );
+    my ( $rest_method, $code, $status, $body );
 
     {
         $rest_method = $method_name . '_' . $suffix;
@@ -34,18 +34,30 @@ around 'dispatch', sub {
         } elsif ( $code = $controller->can( $rest_method ) ) {
             # nothing to do
         } elsif ( 'OPTIONS' eq $suffix ) {
-                $code = sub { $self->_return_options($self->name, @_) };
+            $status = 204;
         } elsif ( 'HEAD' eq $suffix ) {
             $suffix = 'GET';
             redo;
         } elsif ( 'not_implemented' eq $suffix ) {
-            $code = sub { $self->_return_not_implemented($self->name, @_) };
+            $status = 405;
+            $body = '<!DOCTYPE html><title>405 Method Not Allowed</title>'
+                  . "<p>The requested method $req_method is not allowed for this URL.</p>";
         } else {
             $suffix = 'not_implemented';
             redo;
         }
     }
- 
+
+    $code ||= defined $status ? sub {
+        my @allowed = $self->get_allowed_methods( $controller, $c, $method_name );
+        $c->response->status( $status );
+        $c->response->header( Allow => @allowed ? \@allowed : '' );
+        if ( defined $body ) {
+            $c->response->content_type( 'text/plain' );
+            $c->response->body( $body );
+        }
+    } : die 'assert: $code || defined $status';
+
     # localise stuff so we can dispatch the action 'as normal, but get
     # different stats shown, and different code run.
     # Also get the full path for the action, and make it look like a forward
@@ -63,24 +75,6 @@ sub get_allowed_methods {
     $methods{'HEAD'} = 1 if exists $methods{'GET'};
     delete $methods{'not_implemented'};
     sort keys %methods;
-}
- 
-sub _return_options {
-    my ( $self, $method_name, $controller, $c) = @_;
-    my @allowed = $self->get_allowed_methods($controller, $c, $method_name);
-    $c->response->status(204);
-    $c->response->header( 'Allow' => @allowed ? \@allowed : '' );
-}
- 
-sub _return_not_implemented {
-    my ( $self, $method_name, $controller, $c ) = @_;
- 
-    my @allowed = $self->get_allowed_methods($controller, $c, $method_name);
-    $c->response->content_type('text/html');
-    $c->response->status(405);
-    $c->response->header( 'Allow' => @allowed ? \@allowed : '' );
-    $c->response->body( '<!DOCTYPE html><title>405 Method Not Allowed</title><p>The requested method '
-        . $c->request->method . ' is not allowed for this URL.</p>' );
 }
 
 1;
