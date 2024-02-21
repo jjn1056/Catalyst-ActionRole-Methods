@@ -18,7 +18,7 @@ around 'dispatch', sub {
 
 around 'list_extra_info' => sub {
   my ($orig, $self, @args) = @_;
-  my @allowed_methods = sort $self->get_allowed_methods($self->class,undef,$self->name);
+  my @allowed_methods = $self->get_allowed_methods($self->class,undef,$self->name);
   return +{
     %{ $self->$orig(@args) }, 
     HTTP_METHODS => \@allowed_methods,
