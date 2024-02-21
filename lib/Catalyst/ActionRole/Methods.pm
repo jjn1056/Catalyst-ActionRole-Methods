@@ -18,7 +18,13 @@ around 'dispatch', sub {
     my $c    = shift;
 
     my $return = $self->$orig($c, @_);
-    my $rest_method = $self->name . "_" . uc( $c->request->method );
+
+    my $method_name = $self->name;
+    my $req_method = $c->request->method;
+
+    my $suffix = uc $req_method;
+
+    my $rest_method = $method_name . '_' . $suffix;
     my $sub_return = $self->_dispatch_rest_method( $c, $rest_method );
 
     return defined($sub_return) ? $sub_return : $return;
