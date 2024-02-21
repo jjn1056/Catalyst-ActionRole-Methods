@@ -82,13 +82,13 @@ sub _dispatch_rest_method {
 sub get_allowed_methods {
     my ( $self, $controller, $c, $name ) = @_;
     my $class = ref $controller || $controller;
-    my $methods = {
+    my %methods = (
       map { /^$name\_(.+)$/ ? ( $1 => 1 ) : () }
         ($class->meta->get_all_method_names )
-    };
-    $methods->{'HEAD'} = 1 if $methods->{'GET'};
-    delete $methods->{'not_implemented'};
-    return sort keys %$methods;
+    );
+    $methods{'HEAD'} = 1 if exists $methods{'GET'};
+    delete $methods{'not_implemented'};
+    sort keys %methods;
 }
  
 sub _return_options {
