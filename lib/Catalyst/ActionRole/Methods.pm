@@ -104,13 +104,11 @@ sub _return_not_implemented {
     my ( $self, $method_name, $controller, $c ) = @_;
  
     my @allowed = $self->get_allowed_methods($controller, $c, $method_name);
-    $c->response->content_type('text/plain');
+    $c->response->content_type('text/html');
     $c->response->status(405);
     $c->response->header( 'Allow' => @allowed ? \@allowed : '' );
-    $c->response->body( "Method "
-          . $c->request->method
-          . " not implemented for "
-          . $c->uri_for( $method_name ) );
+    $c->response->body( '<!DOCTYPE html><title>405 Method Not Allowed</title><p>The requested method '
+        . $c->request->method . ' is not allowed for this URL.</p>' );
 }
 
 1;

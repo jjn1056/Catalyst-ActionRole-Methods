@@ -70,6 +70,8 @@ use HTTP::Request::Common;
   ok my $res = request(GET '/fail');
   is $res->code, 405;
   is $res->header( 'Allow' ), '';
+  isnt $res->content_length, 0;
+  like $res->content, qr/ GET /;
 }
 
 done_testing;
