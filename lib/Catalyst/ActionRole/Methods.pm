@@ -25,7 +25,7 @@ around 'dispatch', sub {
     my $suffix = uc $req_method;
 
     my $rest_method = $method_name . '_' . $suffix;
-    my $sub_return = $self->_dispatch_rest_method( $c, $rest_method );
+    my $sub_return = $self->_dispatch_rest_method( $c, $rest_method, $suffix );
 
     return defined($sub_return) ? $sub_return : $return;
 };
@@ -34,6 +34,7 @@ sub _dispatch_rest_method {
     my $self        = shift;
     my $c           = shift;
     my $rest_method = shift;
+    my $suffix      = shift;
 
     my $req         = $c->request;
     my $controller = $c->component( $self->class );
@@ -56,7 +57,7 @@ sub _dispatch_rest_method {
             },
             HEAD => sub {
               $rest_method =~ s{_HEAD$}{_GET}i;
-              $self->_dispatch_rest_method($c, $rest_method);
+              $self->_dispatch_rest_method($c, $rest_method, $suffix);
             },
             default => sub {
                 # Otherwise, not implemented.
@@ -66,8 +67,7 @@ sub _dispatch_rest_method {
                     || sub { $self->_return_not_implemented($self->name, @_) };
             },
         };
-        my ( $http_method, $action_name ) = ( $rest_method, $self->name );
-        $http_method =~ s{\Q$action_name\E\_}{};
+        my $http_method = $suffix;
         my $respond = ($code_action->{$http_method}
                        || $code_action->{'default'})->();
         return $respond unless $name;
