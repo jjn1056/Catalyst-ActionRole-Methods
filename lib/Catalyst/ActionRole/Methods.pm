@@ -19,11 +19,9 @@ around 'dispatch', sub {
 around 'list_extra_info' => sub {
   my $orig = shift;
   my $self = shift;
-  my @allowed_methods = $self->get_allowed_methods($self->class,undef,$self->name);
-  return +{
-    %{ $self->$orig(@_) },
-    HTTP_METHODS => \@allowed_methods,
-  };
+  my $info = $self->$orig( @_ );
+  $info->{'HTTP_METHOD'} = [ $self->get_allowed_methods( $self->class, undef, $self->name ) ];
+  $info;
 };
  
 sub _dispatch_rest_method {
