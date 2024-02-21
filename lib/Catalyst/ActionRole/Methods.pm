@@ -24,39 +24,28 @@ around 'dispatch', sub {
 
     my $suffix = uc $req_method;
 
-    my $rest_method = $method_name . '_' . $suffix;
-    my $sub_return = $self->_dispatch_rest_method( $c, $rest_method, $suffix );
-
-    return defined($sub_return) ? $sub_return : $return;
-};
-
-sub _dispatch_rest_method {
-    my $self        = shift;
-    my $c           = shift;
-    my $rest_method = shift;
-    my $suffix      = shift;
-
-    my $req         = $c->request;
     my $controller = $c->component( $self->class );
     my $code;
-  
+
+    my $rest_method;
     {
+        $rest_method = $method_name . '_' . $suffix;
+
         if ( $code = $controller->action_for( $rest_method ) ) {
-      return $c->forward( $code,  $req->args ); # Forward to foo_GET if it's an action
+            my $sub_return = $c->forward( $code, $c->request->args );
+            return defined $sub_return ? $sub_return : $return;
         } elsif ( $code = $controller->can( $rest_method ) ) {
             # nothing to do
         } elsif ( 'OPTIONS' eq $suffix ) {
                 $code = sub { $self->_return_options($self->name, @_) };
         } elsif ( 'HEAD' eq $suffix ) {
-              $rest_method =~ s{_HEAD$}{_GET}i;
-            return
-              $self->_dispatch_rest_method($c, $rest_method, $suffix);
+            $suffix = 'GET';
+            redo;
         } elsif ( 'not_implemented' eq $suffix ) {
             $code = sub { $self->_return_not_implemented($self->name, @_) };
         } else {
-                # Otherwise, not implemented.
             $suffix = 'not_implemented';
-            return $self->_dispatch_rest_method($c, $self->name . '_' . $suffix, $suffix);
+            redo;
         }
     }
  
@@ -66,9 +55,10 @@ sub _dispatch_rest_method {
     local $self->{code} = $code;
     ( local $self->{'reverse'} = '-> ' . $self->reverse ) =~ s{[^/]+\z}{$rest_method};
 
-    $c->execute( $self->class, $self, @{ $req->args } );
-}
- 
+    my $sub_return = $c->execute( $self->class, $self, @{ $c->request->args } );
+    defined $sub_return ? $sub_return : $return;
+};
+
 sub get_allowed_methods {
     my ( $self, $controller, $c, $name ) = @_;
     my $class = ref $controller || $controller;
