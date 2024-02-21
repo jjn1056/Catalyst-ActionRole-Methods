@@ -1,5 +1,9 @@
 Release history for Catalyst-ActionRole-Methods
 
+0.101 - 2024-02-21
+  - 204 status for default OPTIONS response rather than 200 status with 0-length text/plain body
+  - Faster and much cleaner code
+
 0.004 - 2024-01-07
   - No functional changes
   - POD error fix
