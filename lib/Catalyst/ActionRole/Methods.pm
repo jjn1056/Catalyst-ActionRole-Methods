@@ -136,7 +136,7 @@ class.  The intention is to offer some of the popular functionality that comes
 with L<Catalyst::Action::REST> in a more modular, 'build what you need' package.
 
 Bulk of this documentation and test cases derive from L<Catalyst::Action::REST>
-with the current author's gratitude.
+with the original author's gratitude.
 
 This Action Role handles doing automatic method dispatching for requests.  It
 takes a normal Catalyst action, and changes the dispatch to append an
@@ -267,6 +267,8 @@ mechanism described above.
 
 =head1 AUTHOR
 
+  Aristotle Pagaltzis <pagaltzis@gmx.de>
+
   John Napiorkowski <jnapiork@cpan.org>
 
 Author list from L<Catalyst::Action::REST>
@@ -311,7 +313,7 @@ André Walker (andrewalker) <andre@cpan.org>
  
 =head1 COPYRIGHT
  
-Copyright (c) 2006-2015 the above named AUTHOR and CONTRIBUTORS
+Copyright (c) 2006-2024 the above named authors and contributors
  
 =head1 LICENSE
  
