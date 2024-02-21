@@ -52,12 +52,13 @@ sub _dispatch_rest_method {
               $rest_method =~ s{_HEAD$}{_GET}i;
             return
               $self->_dispatch_rest_method($c, $rest_method, $suffix);
+        } elsif ( 'not_implemented' eq $suffix ) {
+            $name = $rest_method;
+            $code = sub { $self->_return_not_implemented($self->name, @_) };
         } else {
                 # Otherwise, not implemented.
-                $name = $self->name . "_not_implemented";
-                $code = $controller->can($name) # User method
-                    # Generic not implemented
-                    || sub { $self->_return_not_implemented($self->name, @_) };
+            $suffix = 'not_implemented';
+            return $self->_dispatch_rest_method($c, $self->name . '_' . $suffix, $suffix);
         }
     }
  
