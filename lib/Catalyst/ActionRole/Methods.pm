@@ -40,35 +40,25 @@ sub _dispatch_rest_method {
     my $controller = $c->component( $self->class );
     my ($code, $name);
   
-    # Common case, for foo_GET etc
-    if ( $code = $controller->action_for($rest_method) ) {
+    {
+        if ( $code = $controller->action_for( $rest_method ) ) {
       return $c->forward( $code,  $req->args ); # Forward to foo_GET if it's an action
-    }
-    elsif ($code = $controller->can($rest_method)) {
+        } elsif ( $code = $controller->can( $rest_method ) ) {
         $name = $rest_method; # Stash name and code to run 'foo_GET' like an action below.
-    }
-    else {
-        my $code_action = {
-            OPTIONS => sub {
+        } elsif ( 'OPTIONS' eq $suffix ) {
                 $name = $rest_method;
                 $code = sub { $self->_return_options($self->name, @_) };
-            },
-            HEAD => sub {
+        } elsif ( 'HEAD' eq $suffix ) {
               $rest_method =~ s{_HEAD$}{_GET}i;
+            return
               $self->_dispatch_rest_method($c, $rest_method, $suffix);
-            },
-            default => sub {
+        } else {
                 # Otherwise, not implemented.
                 $name = $self->name . "_not_implemented";
                 $code = $controller->can($name) # User method
                     # Generic not implemented
                     || sub { $self->_return_not_implemented($self->name, @_) };
-            },
-        };
-        my $http_method = $suffix;
-        my $respond = ($code_action->{$http_method}
-                       || $code_action->{'default'})->();
-        return $respond unless $name;
+        }
     }
  
     # localise stuff so we can dispatch the action 'as normal, but get
