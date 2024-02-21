@@ -4,6 +4,14 @@ use Moose::Role;
 
 our $VERSION = '0.004';
 
+around 'list_extra_info' => sub {
+    my $orig = shift;
+    my $self = shift;
+    my $info = $self->$orig( @_ );
+    $info->{'HTTP_METHOD'} = [ $self->get_allowed_methods( $self->class, undef, $self->name ) ];
+    $info;
+};
+
 around 'dispatch', sub {
     my $orig = shift;
     my $self = shift;
@@ -16,14 +24,6 @@ around 'dispatch', sub {
     return defined($sub_return) ? $sub_return : $return;
 };
 
-around 'list_extra_info' => sub {
-  my $orig = shift;
-  my $self = shift;
-  my $info = $self->$orig( @_ );
-  $info->{'HTTP_METHOD'} = [ $self->get_allowed_methods( $self->class, undef, $self->name ) ];
-  $info;
-};
- 
 sub _dispatch_rest_method {
     my $self        = shift;
     my $c           = shift;
