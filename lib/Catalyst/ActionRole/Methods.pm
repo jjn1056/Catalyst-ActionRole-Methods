@@ -61,7 +61,7 @@ around 'dispatch', sub {
     # different stats shown, and different code run.
     # Also get the full path for the action, and make it look like a forward
     local $self->{'code'} = $code || sub {};
-    ( local $self->{'reverse'} = '-> ' . $self->reverse ) =~ s{[^/]+\z}{$rest_method};
+    ( local $self->{'reverse'} = "-> $self->{'reverse'}" ) =~ s{[^/]+\z}{$rest_method};
 
     my $sub_return = $c->execute( $self->class, $self, @{ $c->request->args } );
     defined $sub_return ? $sub_return : $return;
