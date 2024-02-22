@@ -39,9 +39,10 @@ around 'dispatch', sub {
             $suffix = 'GET';
             redo;
         } elsif ( 'not_implemented' eq $suffix ) {
+            ( my $enc_req_method = $req_method ) =~ s[(["'&<>])]{ '&#'.(ord $1).';' }ge;
             $status = 405;
             $body = '<!DOCTYPE html><title>405 Method Not Allowed</title>'
-                  . "<p>The requested method $req_method is not allowed for this URL.</p>";
+                  . "<p>The requested method $enc_req_method is not allowed for this URL.</p>";
         } else {
             $suffix = 'not_implemented';
             redo;
@@ -53,7 +54,7 @@ around 'dispatch', sub {
         $c->response->status( $status );
         $c->response->header( Allow => @allowed ? \@allowed : '' );
         if ( defined $body ) {
-            $c->response->content_type( 'text/plain' );
+            $c->response->content_type( 'text/html' );
             $c->response->body( $body );
         }
     } : die 'assert: $code || defined $status';
