@@ -19,7 +19,8 @@ around 'dispatch', sub {
 
     my $return = $self->$orig($c, @_);
 
-    my $controller = $c->component( $self->class );
+    my $class = $self->class;
+    my $controller = $c->component( $class );
     my $method_name = $self->name;
     my $req_method = $c->request->method;
     my $suffix = uc $req_method;
@@ -53,7 +54,7 @@ around 'dispatch', sub {
     }
 
     if ( not $code ) {
-        my @allowed = $self->get_allowed_methods( $controller, $c, $method_name );
+        my @allowed = $self->get_allowed_methods( $class, $c, $method_name );
         $c->response->header( Allow => @allowed ? \@allowed : '' );
     }
 
@@ -63,13 +64,13 @@ around 'dispatch', sub {
     local $self->{'code'} = $code || sub {};
     ( local $self->{'reverse'} = "-> $self->{'reverse'}" ) =~ s{[^/]+\z}{$rest_method};
 
-    my $sub_return = $c->execute( $self->class, $self, @{ $c->request->args } );
+    my $sub_return = $c->execute( $class, $self, @{ $c->request->args } );
     defined $sub_return ? $sub_return : $return;
 };
 
 sub get_allowed_methods {
     my ( $self, $controller, $c, $name ) = @_;
-    my $class = ref $controller || $controller;
+    my $class = ref $controller || $controller; # backcompat
     my %methods = map /^\Q$name\E\_(.+)()$/, $class->meta->get_all_method_names;
     $methods{'HEAD'} = 1 if exists $methods{'GET'};
     delete $methods{'not_implemented'};
