@@ -271,52 +271,23 @@ mechanism described above.
 
   John Napiorkowski <jnapiork@cpan.org>
 
-Author list from L<Catalyst::Action::REST>
- 
-  Adam Jacob E<lt>adam@stalecoffee.orgE<gt>, with lots of help from mst and jrockway
-  Marchex, Inc. paid me while I developed this module. (L<http://www.marchex.com>)
- 
 =head1 CONTRIBUTORS
 
-The following contributor list was copied from L<Catalyst::Action::REST>
-from where the bulk of this code was copied.
+This module is based on code, tests and documentation extracted out of
+L<Catalyst::Action::REST>, which was originally developed by Adam Jacob
+with lots of help from mst and jrockway, while being paid by Marchex, Inc
+(http://www.marchex.com).
+
+The following people also contributed to parts copied from that package:
  
 Tomas Doran (t0m) E<lt>bobtfish@bobtfish.netE<gt>
  
-John Goulah
- 
-Christopher Laco
- 
-Daisuke Maki E<lt>daisuke@endeworks.jpE<gt>
- 
-Hans Dieter Pearcey
- 
-Brian Phillips E<lt>bphillips@cpan.orgE<gt>
- 
 Dave Rolsky E<lt>autarch@urth.orgE<gt>
- 
-Luke Saunders
  
 Arthur Axel "fREW" Schmidt E<lt>frioux@gmail.comE<gt>
  
 J. Shirley E<lt>jshirley@gmail.comE<gt>
  
-Gavin Henry E<lt>ghenry@surevoip.co.ukE<gt>
- 
-Gerv http://www.gerv.net/
- 
-Colin Newell <colin@opusvl.com>
- 
 Wallace Reis E<lt>wreis@cpan.orgE<gt>
- 
-André Walker (andrewalker) <andre@cpan.org>
- 
-=head1 COPYRIGHT
- 
-Copyright (c) 2006-2024 the above named authors and contributors
- 
-=head1 LICENSE
- 
-You may distribute this code under the same terms as Perl itself.
  
 =cut
