@@ -129,15 +129,23 @@ action roles can then be applied to it.
 There are several fallbacks if a sub-action for the current request method does
 not exist:
 
-=over 2
+=over 3
 
-=item 1. C<HEAD> requests will try to use the sub-action for C<GET>.
+=item 1.
 
-=item 2. C<OPTIONS> requests will set up a 204 (No Content) response.
+C<HEAD> requests will try to use the sub-action for C<GET>.
 
-=item 3. The C<not_implemented> sub-action is tried as a last resort.
+=item 2.
 
-=item 4. Finally, a 405 (Method Not Found) response is set up.
+C<OPTIONS> requests will set up a 204 (No Content) response.
+
+=item 3.
+
+The C<not_implemented> sub-action is tried as a last resort.
+
+=item 4.
+
+Finally, a 405 (Method Not Found) response is set up.
 
 =back
 
