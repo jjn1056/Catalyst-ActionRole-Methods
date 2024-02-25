@@ -284,12 +284,6 @@ Returns a list of the allowed methods.
 This method overrides the default dispatch mechanism to the re-dispatching
 mechanism described above.
 
-=head1 AUTHOR
-
-  Aristotle Pagaltzis <pagaltzis@gmx.de>
-
-  John Napiorkowski <jnapiork@cpan.org>
-
 =head1 CONTRIBUTORS
 
 This module is based on code, tests and documentation extracted out of
