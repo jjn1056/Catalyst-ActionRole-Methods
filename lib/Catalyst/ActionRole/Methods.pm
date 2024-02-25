@@ -91,88 +91,58 @@ Catalyst::ActionRole::Methods - Dispatch by HTTP Methods
 
 =head1 SYNOPSIS
 
-    package MyApp::Controller::Example;
+ sub foo : Local Does('Methods') {
+   my ($self, $c, $arg) = @_;
+   # called first, regardless of HTTP request method
+ }
 
-    use Moose;
-    use MooseX::MethodAttributes;
+ sub foo_GET : Action {
+   my ($self, $c, $arg) = @_;
+   # called next, but only for GET requests
+   # this is passed the same @_ as its generic action
+ }
 
-    extends 'Catalyst::Controller';
+ sub foo_POST { # does not need to be an action
+   my ($self, $c, $arg) = @_;
+   # likewise for POST requests
+ }
 
-    sub myaction :Chained(/) Does('Methods') CaptureArgs(1) {
-      my ($self, $c, $arg) = @_;
-      # When this action is matched, first execute this action's
-      # body, then an action matching the HTTP method or the not
-      # implemented one if needed.
-    }
-
-      sub myaction_GET :Action {
-        my ($self, $c, $arg) = @_;
-        # Note that if the 'parent' action has args or capture-args, those are
-        # made available to a matching method action.
-      }
-
-      sub myaction_POST {
-        my ($self, $c, $arg) = @_;
-        # We match the subroutine name whether its an action or not.  If you
-        # make it an action, as in the _GET above, you are allowed to apply
-        # action roles (which is the main advantage to this AFAIK).
-      }
-
-      sub myaction_not_implemented {
-        my ($self, $c, $arg) = @_;
-        # There's a sane default for this, but you can override as needed.
-      }
-
-      sub next_action_in_chain_1 :Chained(myaction) Args(0) { ... }
-
-      sub next_action_in_chain_2 :Chained(myaction) Args(0) { ... }
-
-    __PACKAGE__->meta->make_immutable;
+ sub foo_not_implemented { # fallback
+   my ($self, $c, $arg) = @_;
+   # only needed if you want to override the default 405 response
+ }
 
 =head1 DESCRIPTION
 
-This is a L<Moose::Role> version of the classic L<Catalyst::Action::REST> action
-class.  The intention is to offer some of the popular functionality that comes
-with L<Catalyst::Action::REST> in a more modular, 'build what you need' package.
+This is a L<Catalyst> extension which adds additional dispatch based on the
+HTTP method, in the same way L<Catalyst::Action::REST> does:
 
-Bulk of this documentation and test cases derive from L<Catalyst::Action::REST>
-with the original author's gratitude.
+An action which does this role will be matched and run as usual. But after it
+returns, a sub-action will also run, which will be identified by taking the
+name of the main action and appending an underscore and the HTTP request method
+name. This sub-action is passed the same captures and args as the main action.
 
-This Action Role handles doing automatic method dispatching for requests.  It
-takes a normal Catalyst action, and changes the dispatch to append an
-underscore and method name.  First it will try dispatching to an action with
-the generated name, and failing that it will try to dispatch to a regular
-method.
+You can also write the sub-action as a plain method without declaring it as an
+action. Probably the only advantage of declaring it as an action is that other
+action roles can then be applied to it.
 
-    sub foo :Local :Does('Methods') {
-      ... do setup for HTTP method specific handlers ...
-    }
- 
-    sub foo_GET {
-      ... do something for GET requests ...
-    }
- 
-    # alternatively use an Action
-    sub foo_PUT : Action {
-      ... do something for PUT requests ...
-    }
- 
-For example, in the example above, calling GET on "/foo" would result in
-the foo_GET method being dispatched.
- 
-If a method is requested that is not implemented, this action will
-return a status 405 (Method Not Found).  It will populate the C<Allow> header
-with the list of implemented request methods.  You can override this behavior
-by implementing a custom 405 handler like so:
- 
-   sub foo_not_implemented {
-      ... handle not implemented methods ...
-   }
- 
-If you do not provide an _OPTIONS subroutine, we will automatically respond
-with a 204 (No Content). The C<Allow> header will be populated with the list of
-implemented request methods. If you do not provide an _HEAD either, we will
-auto dispatch to the _GET one in case it exists.
+There are several fallbacks if a sub-action for the current request method does
+not exist:
+
+=over 2
+
+=item 1. C<HEAD> requests will try to use the sub-action for C<GET>.
+
+=item 2. C<OPTIONS> requests will set up a 204 (No Content) response.
+
+=item 3. The C<not_implemented> sub-action is tried as a last resort.
+
+=item 4. Finally, a 405 (Method Not Found) response is set up.
+
+=back
+
+Both fallback responses include an C<Allow> header which will be populated from
+the available sub-actions.
 
 =head1 VERSUS Catalyst::Action::REST
 
