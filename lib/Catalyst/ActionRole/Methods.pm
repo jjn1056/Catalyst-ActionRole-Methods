@@ -144,6 +144,55 @@ not exist:
 Both fallback responses include an C<Allow> header which will be populated from
 the available sub-actions.
 
+Note that this action role only I<adds> dispatch. It does not affect matching!
+The main action will always run if it otherwise matches the request, even if no
+suitable sub-action exists and a 405 is generated. Nor does it affect chaining.
+All subsequent actions in a chain will still run, along with their sub-actions.
+
+=head1 INTERACTION WITH CHAINED DISPATCH
+
+The fact that this is an action role which is attached to individual actions
+has some odd and unintuitive consequences when combining it with Chained
+dispatch, particularly when it is used in multiple actions in the same chain.
+This example will not work well at all:
+
+ sub foo : Chained(/) CaptureArgs(1) Does('Methods') { ... }
+ sub foo_GET { ... }
+
+ sub bar : Chained(foo) Args(0) { ... }
+ sub bar_POST { ... }
+
+Because each action does its own isolated C<Methods> sub-dispatch, a C<GET>
+request to this chain will run C<foo>, then C<foo_GET>, then C<bar>, then
+set up a 405 response due to the absence of C<bar_GET>. And because C<bar> only
+has a sub-action for C<POST>, that is all the C<Allow> header will contain.
+
+Worse (maybe), a C<POST> will run C<foo>, then set up a 405 response with an
+C<Allow> list of just C<GET>, but then still run C<bar> and C<bar_POST>.
+
+This means it is never useful for an action which is further along a chain to
+have I<more> sub-actions than any earlier action.
+
+Having I<fewer> sub-actions can be useful: if the earlier part of the chain is
+shared with other chains then each chain can handle a different set of request
+methods:
+
+ sub foo : Chained(/) CaptureArgs(1) Does('Methods') { ... }
+ sub foo_GET { ... }
+ sub foo_POST { ... }
+
+ sub bar : Chained(foo) Args(0) { ... }
+ sub bar_GET { ... }
+
+ sub quux : Chained(foo) Args(0) { ... }
+ sub quux_POST { ... }
+
+In this example, the C</foo/bar> chain will handle only C<GET> while the
+C</foo/quux> chain will handle only C<POST>. If you later wanted to make
+C</foo/quux> also handle C<GET> then you would only need to add C<quux_GET>
+because there is already a C<foo_GET>. But to make C</foo/bar> handle C<PUT>,
+you would need to add both C<foo_PUT> I<and> C<bar_PUT>.
+
 =head1 VERSUS Catalyst::Action::REST
 
 L<Catalyst::Action::REST> works fine doesn't it?  Why offer a new approach?  There's
