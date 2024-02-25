@@ -1,4 +1,4 @@
-use Test::Most;
+use Test::More 0.88;
 
 {  
   package MyApp::Controller::Root;
