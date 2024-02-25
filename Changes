@@ -1,5 +1,11 @@
 Release history for Catalyst-ActionRole-Methods
 
+0.102 - 2024-02-25
+  - Correct content type for the default 405 response
+  - Minor code cleanups and speedups
+  - Improved documentation
+  - Updated packaging
+
 0.101 - 2024-02-21
   - 204 status for default OPTIONS response rather than 200 status with 0-length text/plain body
   - Faster and much cleaner code
