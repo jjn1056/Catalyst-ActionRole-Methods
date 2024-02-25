@@ -2,7 +2,7 @@ package Catalyst::ActionRole::Methods;
 
 use Moose::Role;
 
-our $VERSION = '0.102';
+our $VERSION = '0.103';
 
 around 'list_extra_info' => sub {
     my $orig = shift;
