@@ -280,7 +280,7 @@ might be a better choice over the other depending on how your chains are arrange
 your desired flow of action.
 
 =head1 METHODS
- 
+
 This role contains the following methods.
 
 =head2 get_allowed_methods
@@ -295,15 +295,15 @@ with lots of help from mst and jrockway, while being paid by Marchex, Inc
 (http://www.marchex.com).
 
 The following people also contributed to parts copied from that package:
- 
+
 Tomas Doran (t0m) E<lt>bobtfish@bobtfish.netE<gt>
- 
+
 Dave Rolsky E<lt>autarch@urth.orgE<gt>
- 
+
 Arthur Axel "fREW" Schmidt E<lt>frioux@gmail.comE<gt>
- 
+
 J. Shirley E<lt>jshirley@gmail.comE<gt>
- 
+
 Wallace Reis E<lt>wreis@cpan.orgE<gt>
- 
+
 =cut
