@@ -287,11 +287,6 @@ This role contains the following methods.
 
 Returns a list of the allowed methods.
 
-=head2 dispatch
- 
-This method overrides the default dispatch mechanism to the re-dispatching
-mechanism described above.
-
 =head1 CONTRIBUTORS
 
 This module is based on code, tests and documentation extracted out of
